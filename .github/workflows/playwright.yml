@@ -8,6 +8,7 @@ on:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DOTENV_CONFIG_QUIET: true
 
 permissions:
   contents: read
@@ -39,6 +40,12 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
 
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          STANDARD_USER: ${{ secrets.STANDARD_USER }}
+          LOCKED_OUT_USER: ${{ secrets.LOCKED_OUT_USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+
       - name: Upload Playwright report artifact
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -47,6 +54,7 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
+      # This creates the deployment payload for GitHub Pages
       - name: Upload Pages artifact
         if: ${{ !cancelled() }}
         uses: actions/upload-pages-artifact@v3
@@ -60,9 +68,9 @@ jobs:
 
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }} # Fixed: Can read outputs here because id is on the same job
 
     steps:
       - name: Deploy to GitHub Pages
-        id: deployment
+        id: deployment # Kept here so 'url' above can fetch the value after execution
         uses: actions/deploy-pages@v4
