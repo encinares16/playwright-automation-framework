@@ -11,9 +11,8 @@ env:
   DOTENV_CONFIG_QUIET: true
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
+  pull-requests: write
 
 concurrency:
   group: pages
@@ -39,7 +38,6 @@ jobs:
 
       - name: Run Playwright tests
         run: npx playwright test
-
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           STANDARD_USER: ${{ secrets.STANDARD_USER }}
@@ -47,30 +45,28 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
 
       - name: Upload Playwright report artifact
-        if: ${{ !cancelled() }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
 
-      # This creates the deployment payload for GitHub Pages
-      - name: Upload Pages artifact
-        if: ${{ !cancelled() }}
-        uses: actions/upload-pages-artifact@v3
+      # Publish report to gh-pages branch
+      - name: Deploy Playwright report to gh-pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: playwright-report/
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: playwright-report
+          keep_files: false
 
-  deploy:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    needs: test
-    runs-on: ubuntu-latest
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }} # Fixed: Can read outputs here because id is on the same job
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment # Kept here so 'url' above can fetch the value after execution
-        uses: actions/deploy-pages@v4
+      # Show live URL in Actions summary
+      - name: Add report link
+        if: always()
+        run: |
+          echo "## 🎭 Playwright Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Live report:" >> $GITHUB_STEP_SUMMARY
+          echo "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
