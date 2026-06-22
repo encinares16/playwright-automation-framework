@@ -1,0 +1,24 @@
+{
+  "name": "playwright",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report",
+    "codegen:save": "npx playwright codegen --save-storage=auth.json https://www.saucedemo.com/",
+    "codegen:load": "npx playwright codegen --load-storage=auth.json https://www.saucedemo.com/"
+  },
+  "keywords": [],
+  "author": "Jerome Encinares",
+  "license": "ISC",
+  "description": "Playwright UI Automation Framework",
+  "devDependencies": {
+    "@playwright/test": "^1.61.0",
+    "@types/node": "^25.9.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "otplib": "^13.4.1"
+  }
+}
