@@ -6,18 +6,18 @@ import { expect, Page } from "@playwright/test"
 export class LoginAssertion {
 
   private readonly loginPage: LoginPage
-  private readonly dashboard: ProductInventoryPage
+  private readonly productPage: ProductInventoryPage
   private readonly message: ErrorComponent
 
   constructor(private readonly page: Page) {
     this.loginPage = new LoginPage(page)
-    this.dashboard = new ProductInventoryPage(page)
+    this.productPage = new ProductInventoryPage(page)
     this.message = new ErrorComponent(page)
   }
 
   async verifyUserDashboard() {
     await expect(this.page).toHaveTitle(/Swag Labs/)
-    await expect(this.dashboard.header).toBeVisible()
+    await expect(this.productPage.header).toBeVisible()
   }
 
   async verifyMessageInvalidCred(){

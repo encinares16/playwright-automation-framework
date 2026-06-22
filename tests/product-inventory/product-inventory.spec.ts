@@ -8,10 +8,10 @@ test.describe('Product Inventory', async () => {
     await loginPage.goto()
   })
 
-  test('should authenticate user with valid credentials @p1 @smoke', async ({ page, assertion }) => {
+  test('should authenticate user with valid credentials @p1 @smoke', async ({ loginPage, assertion }) => {
     const { username, password } = accounts.standardUser
     
-    await userLoginFlow(page, username, password)
+    await userLoginFlow(loginPage, username, password)
     await assertion.verifyUserDashboard()
   })
 })
